@@ -1,5 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide CarouselController;
 import 'package:glamcode/data/model/home_page.dart';
 import 'package:glamcode/helper/custom_cached_network_image.dart';
 
@@ -19,6 +19,7 @@ class ImageSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CarouselSlider(
+      carouselController: CarouselSliderController(),
         items: getImagesList(),
         options: CarouselOptions(
           autoPlay: true,

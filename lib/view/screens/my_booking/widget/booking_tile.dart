@@ -14,6 +14,11 @@ import '../../../../data/model/user.dart';
 import '../../../Chat/ui/model/chatroomModel.dart';
 import '../../dashboard/dashboard_screen.dart';
 import 'rescheduleBottomSheet.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+// Get the current user ID
+
+
 
 class BookingTile extends StatefulWidget {
   final OngoingBookingsArr ongoingBookingsArr;
@@ -26,12 +31,13 @@ class BookingTile extends StatefulWidget {
 
 class _BookingTileState extends State<BookingTile> {
   bool showSpinner = false;
+  String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   Future<ChatRoomModel?> getChatroomModel() async {
     ChatRoomModel? chatroom;
     final Auth auth = Auth.instance;
-    User currentUser = await auth.currentUser;
+    var currentUser = await auth.currentUser;
 
-    final beuticianId = widget.ongoingBookingsArr.beauticianID.toString();
+    final beuticianId = widget.ongoingBookingsArr.beauticianId.toString();
     final userid = currentUser.id.toString();
 
     QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -46,7 +52,7 @@ class _BookingTileState extends State<BookingTile> {
 
       var docData = snapshot.docs[0].data();
       ChatRoomModel existingChatroom =
-          ChatRoomModel.fromMap(docData as Map<String, dynamic>);
+      ChatRoomModel.fromMap(docData as Map<String, dynamic>);
       chatroom = existingChatroom;
     } else {
       //create a new one
@@ -80,7 +86,7 @@ class _BookingTileState extends State<BookingTile> {
           borderOnForeground: true,
           margin: const EdgeInsets.all(0),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
@@ -175,7 +181,7 @@ class _BookingTileState extends State<BookingTile> {
                                   RichText(
                                     text: TextSpan(
                                       text:
-                                          "₹${widget.ongoingBookingsArr.discountedPrice}   ",
+                                      "₹${widget.ongoingBookingsArr.discountedPrice}   ",
                                       style: TextStyle(
                                           fontSize: Dimensions.fontSizeSmall,
                                           color: Colors.black),
@@ -190,7 +196,7 @@ class _BookingTileState extends State<BookingTile> {
                                                     .fontSizeExtraSmall,
                                                 color: Colors.grey,
                                                 decoration:
-                                                    TextDecoration.lineThrough,
+                                                TextDecoration.lineThrough,
                                               ),
                                             ),
                                           ),
@@ -252,7 +258,7 @@ class _BookingTileState extends State<BookingTile> {
                       flex: 3,
                       child: Padding(
                         padding:
-                            const EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                        const EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           clipBehavior: Clip.hardEdge,
@@ -287,7 +293,7 @@ class _BookingTileState extends State<BookingTile> {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                     backgroundColor:
-                                        Color.fromARGB(255, 218, 119, 220),
+                                    Color.fromARGB(255, 218, 119, 220),
                                     content: Text(
                                       "Beautician not assigned yet!",
                                       style: TextStyle(color: Colors.white),
@@ -303,7 +309,7 @@ class _BookingTileState extends State<BookingTile> {
                               showSpinner = true;
                             });
                             ChatRoomModel? chatRoomModel =
-                                await getChatroomModel();
+                            await getChatroomModel();
                             log(chatRoomModel.toString());
                             setState(() {
                               showSpinner = false;
@@ -313,23 +319,26 @@ class _BookingTileState extends State<BookingTile> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ChatRoom(
-                                            bookingId: widget
-                                                .ongoingBookingsArr.bookingId
-                                                .toString(),
-                                            beauticianId: widget
-                                                .ongoingBookingsArr.beauticianID
-                                                .toString(),
-                                            beauticianName: widget
-                                                .ongoingBookingsArr
-                                                .beauticianName
-                                                .toString(),
-                                          )));
+                                        bookingId: widget
+                                            .ongoingBookingsArr.bookingId
+                                            .toString(),
+                                        beauticianId: widget
+                                            .ongoingBookingsArr.beauticianId
+                                            .toString(),
+                                        beauticianName: widget
+                                            .ongoingBookingsArr
+                                            .beauticianName
+                                            .toString(),
+                                        userId: userId,
+
+
+                                      )));
                             }
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                     backgroundColor:
-                                        Color.fromARGB(255, 218, 119, 220),
+                                    Color.fromARGB(255, 218, 119, 220),
                                     content: Text(
                                       "Beautician not assigned yet!",
                                       style: TextStyle(color: Colors.white),
@@ -368,84 +377,84 @@ class _BookingTileState extends State<BookingTile> {
                 // ),
                 (widget.ongoingBookingsArr.orderStatus == "pending")
                     ? Row(
-                        children: [
-                          CupertinoButton(
-                              child: const Text("Cancel"),
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: const Text("Alert"),
-                                        content: const Text(
-                                            "Do you want to cancel the booking ?"),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () {
-                                                DioClient.instance.cancelReschedule(
-                                                    widget.ongoingBookingsArr
-                                                        .bookingId
-                                                        .toString(),
-                                                    "${widget.ongoingBookingsArr.bookingDate} ${widget.ongoingBookingsArr.bookingTime}",
-                                                    "1");
+                  children: [
+                    CupertinoButton(
+                        child: const Text("Cancel"),
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text("Alert"),
+                                  content: const Text(
+                                      "Do you want to cancel the booking ?"),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () {
+                                          DioClient.instance.cancelReschedule(
+                                              widget.ongoingBookingsArr
+                                                  .bookingId
+                                                  .toString(),
+                                              "${widget.ongoingBookingsArr.bookingDate} ${widget.ongoingBookingsArr.bookingTime}",
+                                              "1");
 
-                                                Navigator.pop(context);
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: ((context) =>
-                                                            const DashboardScreen(
-                                                                pageIndex:
-                                                                    2))));
-                                                DioClient.instance
-                                                    .getBookings();
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                        const SnackBar(
-                                                  content: Text(
-                                                      "Booking Cancelled!"),
-                                                  backgroundColor: Colors.green,
-                                                ));
-                                              },
-                                              child: const Text("Yes")),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: const Text("No"))
-                                        ],
-                                      );
-                                    });
-                              }),
-                          CupertinoButton(
-                              child: const Text("Reschedule"),
-                              onPressed: () {
-                                showModalBottomSheet(
-                                    isScrollControlled: true,
-                                    useSafeArea: true,
-                                    enableDrag: true,
-                                    showDragHandle: true,
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(12),
-                                            topRight: Radius.circular(12))),
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return StatefulBuilder(builder:
-                                          (BuildContext context,
-                                              StateSetter setstate) {
-                                        return RecheduleBottomSheet(
-                                          ongoingBookingsArr:
-                                              widget.ongoingBookingsArr,
-                                        );
-                                      });
-                                    });
-                              })
-                        ],
-                      )
+                                          Navigator.pop(context);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: ((context) =>
+                                                  const DashboardScreen(
+                                                      pageIndex:
+                                                      2))));
+                                          DioClient.instance
+                                              .getBookings();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                    "Booking Cancelled!"),
+                                                backgroundColor: Colors.green,
+                                              ));
+                                        },
+                                        child: const Text("Yes")),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("No"))
+                                  ],
+                                );
+                              });
+                        }),
+                    CupertinoButton(
+                        child: const Text("Reschedule"),
+                        onPressed: () {
+                          showModalBottomSheet(
+                              isScrollControlled: true,
+                              useSafeArea: true,
+                              enableDrag: true,
+                              showDragHandle: true,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(12),
+                                      topRight: Radius.circular(12))),
+                              context: context,
+                              builder: (BuildContext context) {
+                                return StatefulBuilder(builder:
+                                    (BuildContext context,
+                                    StateSetter setstate) {
+                                  return RecheduleBottomSheet(
+                                    ongoingBookingsArr:
+                                    widget.ongoingBookingsArr,
+                                  );
+                                });
+                              });
+                        })
+                  ],
+                )
                     : Container()
               ],
             ),

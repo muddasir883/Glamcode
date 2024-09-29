@@ -60,9 +60,11 @@ class _MyBookingScreenState extends State<MyBookingScreen> {
                       }),
             );
           } else {
+            print("error is ${snapshot.data}");
             return const CustomError();
           }
         } else {
+          print("error is ${snapshot.data}");
           return const CustomError();
         }
       },

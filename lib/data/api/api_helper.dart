@@ -232,19 +232,24 @@ class DioClient {
 
   Future<BookingsModel?> getBookings() async {
     BookingsModel? bookingsModel;
-    try {
+    // try {
       User currentUser = await auth.currentUser;
       print(currentUser.id);
       // Response bookingsModelData = await _dio.get('$_baseUrl/bookings/10463');
       Response bookingsModelData =
           await _dio.get('$_baseUrl/bookings/${currentUser.id}');
-      bookingsModel = BookingsModel.fromJson(bookingsModelData.data);
+      print("data is ${bookingsModelData.data}");
+      bookingsModel =await BookingsModel.fromJson(bookingsModelData.data);
       log("bookingmode");
       log(bookingsModel.ongoingBookingsArr.toString());
-    } on DioError catch (e) {
+      print("data is ${bookingsModelData.data}");
+      return bookingsModel;
+    // }
+
+   /* on DzioError catch (e) {
       if (e.response != null) {
       } else {}
-    }
+    }*/
     return bookingsModel;
   }
 
@@ -538,7 +543,7 @@ class DioClient {
   Future<bool?> sendOtp(String phoneNumber, String referlcode) async {
     Map<String, dynamic> data = {
       "mobile": phoneNumber,
-      "calling_code": "+91",
+      "calling_code": "+92",
       "reffer_code": referlcode,
     };
     String jsonData = json.encode(data);
@@ -558,7 +563,7 @@ class DioClient {
 
   Future<UserResponse?> verifyOtp(String otp, String phoneNumber) async {
     Map<String, dynamic> data = {
-      "calling_code": "+91",
+      "calling_code": "+92",
       "mobile": phoneNumber,
       "otp": otp
     };
